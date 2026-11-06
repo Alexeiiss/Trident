@@ -67,7 +67,7 @@ Install these skills, then confirm /td-script works.
 project's `.claude/skills/`.
 
 **Claude apps (claude.ai / desktop):** download the per-skill zips from the
-[latest release](https://github.com/Alexeiiss/trident/releases/latest) and upload them in
+[`downloads/`](downloads/) folder (all 14 in one: [`trident-claude-ai-skills-1.0.0.zip`](downloads/trident-claude-ai-skills-1.0.0.zip?raw=1), or one by one in [`downloads/skills/`](downloads/skills/)) and upload them in
 Settings → Capabilities → Skills. Each zip carries its own tools.
 
 **Building from source:** the skills are generated from `src/` and `shared/` -

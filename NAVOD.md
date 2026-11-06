@@ -6,7 +6,7 @@ Nic nepublikují – napíšou text, ty ho vložíš a zveřejníš.
 ## Instalace
 
 **Aplikace Claude (web / desktop):** stáhni zipy z
-[posledního vydání](https://github.com/Alexeiiss/trident/releases/latest) a nahraj je v
+[`downloads/`](downloads/) (všech 14 najednou: [`trident-claude-ai-skills-1.0.0.zip`](downloads/trident-claude-ai-skills-1.0.0.zip?raw=1)) a nahraj je v
 Nastavení → Capabilities → Skills. Každý skill je samostatný zip i se svými nástroji.
 
 **Claude Code:** `/plugin marketplace add Alexeiiss/trident` a pak `/plugin install trident`,
