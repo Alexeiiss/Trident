@@ -1,0 +1,26 @@
+{
+  "name": "trident",
+  "description": "Fourteen Claude skills for creators on YouTube, TikTok and Instagram, in English, Czech, Russian and Romanian: scored hooks off 26 formulas, click-surface and caption linters with current platform limits, one-video-to-three-platforms packaging, multi-part series splitting and handoff diagnosis, retention reading for long and short form, edit decision lists, clips, chapters, comments, planning, audits and an outlier finder.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexandr Badasco"
+  },
+  "license": "MIT",
+  "keywords": [
+    "youtube",
+    "tiktok",
+    "instagram",
+    "reels",
+    "shorts",
+    "creator",
+    "hooks",
+    "captions",
+    "series",
+    "retention",
+    "czech",
+    "russian",
+    "romanian"
+  ],
+  "homepage": "https://github.com/Alexeiiss/trident",
+  "repository": "https://github.com/Alexeiiss/trident"
+}

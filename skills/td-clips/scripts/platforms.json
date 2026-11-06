@@ -1,0 +1,62 @@
+{
+ "verified": "2026-11",
+ "note": "Platform limits as checked in November 2026. Platforms change these without notice - if the app disagrees with this file, the app is right; update this file.",
+ "youtube": {
+  "name": "YouTube (long-form)",
+  "title_hard": 100,
+  "title_desktop": 60,
+  "title_mobile": 40,
+  "description_hard": 5000,
+  "description_fold": 150,
+  "tags_total_chars": 500,
+  "hashtags_shown_above_title": 3,
+  "hashtags_max": 15,
+  "thumb_words_max": 3,
+  "chapters": {"first": "0:00", "min_count": 3, "min_seconds": 10},
+  "aspect": "16:9",
+  "hook_window_s": 30,
+  "healthy_hook_loss_pct": 25
+ },
+ "shorts": {
+  "name": "YouTube Shorts",
+  "title_hard": 100,
+  "title_visible": 40,
+  "max_seconds": 180,
+  "sweet_spot_s": [20, 60],
+  "aspect": "9:16",
+  "hook_window_s": 3,
+  "key_metric": "viewed vs swiped away (Studio > Shorts > Engagement)",
+  "healthy_viewed_pct": 70
+ },
+ "tiktok": {
+  "name": "TikTok",
+  "caption_hard_app": 4000,
+  "caption_hard_api": 2200,
+  "caption_fold": 100,
+  "hashtags_recommended": [3, 5],
+  "mentions_max": 30,
+  "max_seconds_app": 600,
+  "sweet_spot_s": [21, 60],
+  "aspect": "9:16",
+  "cover_words_max": 6,
+  "hook_window_s": 3,
+  "key_metric": "average watch time / duration, and % watched full video (TikTok Studio > Analytics > the video)",
+  "healthy_completion_pct": 40
+ },
+ "instagram": {
+  "name": "Instagram Reels",
+  "caption_hard": 2200,
+  "caption_fold": 125,
+  "hashtags_max": 5,
+  "hashtags_note": "Hard cap of 5 per post/Reel since Dec 2025; hashtags in the first comment count toward the same 5.",
+  "alt_text_max": 100,
+  "max_seconds_reels_tab": 180,
+  "sweet_spot_s": [7, 60],
+  "aspect": "9:16",
+  "cover_words_max": 6,
+  "safe_zone": "keep text out of the bottom ~20% and the right ~15% (caption, buttons)",
+  "hook_window_s": 3,
+  "key_metric": "skip rate and average watch time (Professional dashboard > the Reel > Insights)",
+  "healthy_skip_pct": 50
+ }
+}

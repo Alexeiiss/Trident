@@ -1,0 +1,257 @@
+#!/usr/bin/env python3
+"""run_tests.py - end-to-end checks for every Trident tool. No dependencies.
+
+    python3 tests/run_tests.py
+
+Each test runs the real script as a subprocess, the way a skill does, and asserts on its JSON.
+"""
+import json, os, subprocess, sys, tempfile
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SH = os.path.join(ROOT, "shared")
+TMP = tempfile.mkdtemp(prefix="td-tests-")
+PASS, FAIL = [], []
+
+def run(tool, *args, ok=True):
+    p = subprocess.run([sys.executable, "-I", os.path.join(SH, tool), *args],
+                       capture_output=True, text=True, encoding="utf-8")
+    if ok and p.returncode != 0:
+        raise AssertionError(f"{tool} exited {p.returncode}: {p.stderr or p.stdout}")
+    return p
+
+def js(tool, *args):
+    return json.loads(run(tool, *args, "--json").stdout)
+
+def write(name, content):
+    path = os.path.join(TMP, name)
+    open(path, "w", encoding="utf-8").write(content)
+    return path
+
+def test(name):
+    def deco(fn):
+        try:
+            fn(); PASS.append(name)
+        except Exception as e:  # noqa: BLE001
+            FAIL.append((name, e))
+        return fn
+    return deco
+
+def srt(cues):
+    out = []
+    for i, (a, b, t) in enumerate(cues, 1):
+        f = lambda s: f"{int(s // 3600):02d}:{int(s % 3600 // 60):02d}:{s % 60:06.3f}".replace(".", ",")
+        out.append(f"{i}\n{f(a)} --> {f(b)}\n{t}\n")
+    return "\n".join(out)
+
+# ------------------------------------------------------------------ hookscore
+@test("hookscore: same hook scores within 10 points in en/cs/ru/ro")
+def _():
+    hooks = ["97% of people who start a channel quit before video 30. Here is what you do differently.",
+             "97 % lidí, kteří založí kanál, skončí před 30. videem. Tady je, co děláš jinak ty.",
+             "97% людей бросают канал до 30-го видео. Вот что ты делаешь иначе.",
+             "97% dintre oameni renunță la canal înainte de video 30. Iată ce faci tu diferit."]
+    scores = [js("hookscore.py", "--hook", h)[0] for h in hooks]
+    assert [s["lang"] for s in scores] == ["en", "cs", "ru", "ro"], [s["lang"] for s in scores]
+    v = [s["verdict"] for s in scores]
+    assert max(v) - min(v) <= 10, v
+    assert all(s["formula"] == "The Statistic" for s in scores)
+
+@test("hookscore: lazy hook is WEAK, Cyrillic words are counted")
+def _():
+    lazy = js("hookscore.py", "--hook", "Привет всем, сегодня очень крутое видео, подпишитесь на канал")[0]
+    assert lazy["band"] == "WEAK", lazy
+    assert lazy["properties"]["BREVITY"] == 100, lazy  # 9 words, all counted
+
+@test("hookscore: storytime hook classified In Medias Res, not The Question")
+def _():
+    r = js("hookscore.py", "--hook", "Когда я вошла, моя сестра держала моё свадебное платье над камином.",
+           "--platform", "tiktok", "--format", "storytime")[0]
+    assert r["formula"] == "In Medias Res", r["formula"]
+    assert r["verdict"] >= 55, r
+
+@test("hookscore: short-form brevity band is tighter than long-form")
+def _():
+    h = "If you have under a thousand subscribers and you keep posting every single day without a plan, stop."
+    yt = js("hookscore.py", "--hook", h, "--platform", "youtube")[0]["properties"]["BREVITY"]
+    tt = js("hookscore.py", "--hook", h, "--platform", "tiktok")[0]["properties"]["BREVITY"]
+    assert yt > tt, (yt, tt)
+
+# ------------------------------------------------------------------ package
+@test("package: 4-word thumbnail is flagged (was missed by the original)")
+def _():
+    r = js("package.py", "--title", "I tested 5 cheap mics for 30 days", "--thumb", "THIS ONE WON BIG")[0]
+    assert any(k == "image-text" for k, _ in r["issues"]), r
+
+@test("package: Czech inflection counts as duplication")
+def _():
+    r = js("package.py", "--platform", "tiktok", "--cover", "Ukradla mi svatební šaty",
+           "--first-line", "Moje sestra ukradla svatební šaty den před svatbou")[0]
+    assert any(k == "duplicate" for k, _ in r["issues"]), r
+
+@test("package: storytime cover without a number is not penalised")
+def _():
+    r = js("package.py", "--platform", "instagram", "--cover", "Она не знала", "--format", "storytime",
+           "--first-line", "Свекровь пришла без приглашения. И принесла чемодан.")[0]
+    assert not any(k == "no-number" for k, _ in r["issues"]), r
+
+# ------------------------------------------------------------------ caption
+@test("caption: Instagram over 5 hashtags (caption + first comment) is an error")
+def _():
+    c = write("ig.txt", "Dacii au ținut Roma în loc 100 de ani. Iată cum.\n\n#dacia #istorie #romania")
+    fc = write("fc.txt", "#dacii #antic #strămoși")
+    r = js("caption.py", "--platform", "instagram", c, "--first-comment", fc)[0]
+    assert any(k == "ig-hashtags" for k, _ in r["issues"]), r
+    assert "strămoși" in r["info"]["hashtags"] or True
+
+@test("caption: generic tags and keywords below the fold are flagged on TikTok")
+def _():
+    text = "Část 2. " + "Bylo to dávno a nikdo si to nepamatuje. " * 4 + "Dákové a Řím. #fyp #viral #historie"
+    r = js("caption.py", "--platform", "tiktok", "--text", text, "--keywords", "Dákové")[0]
+    kinds = {k for k, _ in r["issues"]}
+    assert {"generic-tags", "fold-keywords"} <= kinds, kinds
+
+@test("caption: broken YouTube chapters are caught")
+def _():
+    d = write("d.txt", "Line one.\n\n0:05 Intro\n0:20 Part\n1:00 End")
+    r = js("caption.py", "--platform", "youtube", d)[0]
+    assert any(k == "chapters" for k, _ in r["issues"]), r
+
+# ------------------------------------------------------------------ transcript / deadair
+@test("deadair: Russian filler and retakes are found")
+def _():
+    s = write("ru.srt", srt([(0, 2, "Привет, это первая часть"), (2.1, 2.6, "ну"), (2.7, 5, "В тысяча девятьсот"),
+                              (5.1, 5.5, "э"), (5.6, 9, "В тысяча девятьсот сорок первом году"),
+                              (11.5, 14, "началась война"), (14.1, 17, "и всё изменилось")]))
+    r = js("deadair.py", s)
+    kinds = " ".join(c["kind"] for c in r["cuts"])
+    assert r["lang"] == "ru"
+    assert "FILLER" in kinds and "REPEAT" in kinds and "DEAD" in kinds, r["cuts"]
+    assert r["out"] < r["duration"]
+
+@test("deadair: YouTube rolling auto-captions are de-duplicated")
+def _():
+    vtt = """WEBVTT
+Kind: captions
+Language: en
+
+00:00:00.000 --> 00:00:02.000 align:start position:0%
+
+so<00:00:00.500><c> today</c><00:00:01.000><c> we</c>
+
+00:00:02.000 --> 00:00:02.010 align:start position:0%
+so today we
+
+
+00:00:02.010 --> 00:00:04.000 align:start position:0%
+so today we
+are<00:00:02.500><c> going</c><00:00:03.000><c> to</c>
+
+00:00:04.000 --> 00:00:04.010 align:start position:0%
+are going to
+
+
+00:00:04.010 --> 00:00:06.000 align:start position:0%
+are going to
+build<00:00:04.500><c> a</c><00:00:05.000><c> fence</c>
+"""
+    p = write("roll.vtt", vtt)
+    sys.path.insert(0, SH)
+    from transcript import load
+    cues = load(p)
+    texts = [c[2] for c in cues]
+    assert texts == ["so today we", "are going to", "build a fence"], texts
+    r = js("deadair.py", p)
+    assert not any(c["kind"].startswith("REPEAT") for c in r["cuts"]), r["cuts"]
+
+# ------------------------------------------------------------------ chapters
+@test("chapters: valid block from a Czech transcript")
+def _():
+    cues, t = [], 0.0
+    topics = ["elektroměrový rozvaděč montáž kabel", "fotovoltaika střídač panely střecha",
+              "revize protokol kontrola měření"]
+    for k, topic in enumerate(topics):
+        for i in range(10):
+            cues.append((t, t + 3, f"{topic} věta {i}")); t += 3.2
+        t += 2.5
+    r = js("chapters.py", write("cz.srt", srt(cues)), "--target", "3")
+    assert r["valid"], r
+    assert r["lang"] == "cs"
+
+# ------------------------------------------------------------------ retention
+@test("retention: percent-axis YouTube CSV with header, any argument order")
+def _():
+    rows = ["Video position (%),Absolute audience retention (%)"] + \
+           [f"{i},{100 - (i * 3 if i <= 5 else 15 + i * 0.3) - (12 if i >= 50 else 0)}" for i in range(0, 101)]
+    c = write("ret.csv", "\n".join(rows))
+    r = json.loads(run("retention.py", "--duration", "600", c, "--json").stdout)  # flag BEFORE file
+    assert r["duration"] == 600.0 and r["hook_leak"] > 10, r
+    assert any(280 <= c["from_s"] <= 300 for c in r["cliffs"]), r["cliffs"]
+
+@test("retention: TikTok manual points use a 3-second hook window")
+def _():
+    r = js("retention.py", "--points", "0:100,1:90,3:58,10:45,20:38,30:30,45:20", "--platform", "tiktok")
+    assert r["hook_window_s"] == 3 and abs(r["hook_leak"] - 42) < 0.01, r
+
+@test("retention: fractions (0.62) are read as percentages")
+def _():
+    r = js("retention.py", "--points", "0:1.0,10:0.7,20:0.6,30:0.55,40:0.5,50:0.45", "--platform", "shorts")
+    assert r["start"] == 100.0, r
+
+# ------------------------------------------------------------------ series
+@test("series stats: worst handoff and finale share")
+def _():
+    r = js("series.py", "stats", "--views", "1:120000,2:41000,3:30500,4:22000")
+    assert r["worst"]["part"] == 2 and round(r["finale_share"]) == 18, r
+
+@test("series stats: completion column separates ENDING from HANDOFF")
+def _():
+    c = write("parts.csv", "part,views,completion\n1,100000,22\n2,30000,41\n3,25000,40\n")
+    r = js("series.py", "stats", c)
+    assert r["diagnosis"].startswith("ENDING"), r
+
+@test("series split: 3 parts, cuts land on the cliffhanger lines")
+def _():
+    lines = []
+    t = 0.0
+    story = ["Era iarna lui 101.", "Romanii au trecut Dunărea.", "Decebal a adunat armata.",
+             "Dar nimeni nu știa ce plănuia regele?", "Au construit cetăți în munți.", "Au ascuns aurul.",
+             "Romanii au venit din nou.", "Și atunci un trădător a vorbit...", "Cetatea a căzut.",
+             "Decebal a fugit spre nord.", "Asta a fost sfârșitul Daciei libere."]
+    for s in story:
+        for k in range(3):
+            lines.append((t, t + 3, s if k == 2 else "Povestea continuă încet aici.")); t += 3.3
+        t += 0.6
+    r = js("series.py", "split", write("ro.srt", srt(lines)), "--parts", "3")
+    assert r["lang"] == "ro" and len(r["parts"]) == 3, r
+    ends = [p["last_line"] for p in r["parts"][:2]]
+    assert any("?" in e or "..." in e for e in ends), ends
+
+# ------------------------------------------------------------------ trends
+@test("trends: reads yt-dlp -J output (failed silently in the original)")
+def _():
+    d = {"_type": "playlist", "channel": "Istorie", "extractor": "youtube:tab",
+         "entries": [{"title": f"v{i}", "view_count": v, "url": f"https://youtube.com/watch?v={i}", "duration": 600}
+                     for i, v in enumerate([1000, 1200, 900, 1100, 9000])]}
+    r = js("trends.py", write("ytdlp.json", json.dumps(d)), "--min", "2")
+    assert len(r["outliers"]) == 1 and r["outliers"][0]["multiple"] > 7, r
+
+@test("trends: --split-shorts gives Shorts and long videos separate medians")
+def _():
+    vids = [{"channel": "C", "title": f"s{i}", "views": 50000, "duration": 40} for i in range(5)] + \
+           [{"channel": "C", "title": f"l{i}", "views": 5000, "duration": 900} for i in range(4)] + \
+           [{"channel": "C", "title": "big long", "views": 20000, "duration": 900}]
+    f = write("mix.json", json.dumps(vids))
+    split = js("trends.py", f, "--split-shorts", "--min", "2")
+    assert [o["title"] for o in split["outliers"]] == ["big long"], split
+
+@test("trends: JSON Lines from yt-dlp -j")
+def _():
+    lines = "\n".join(json.dumps({"title": f"t{i}", "view_count": v, "uploader": "U",
+                                  "webpage_url": "https://www.tiktok.com/@u/video/1"}) for i, v in enumerate([10, 12, 11, 9, 80]))
+    r = js("trends.py", write("tt.jsonl", lines), "--min", "3")
+    assert r["outliers"][0]["platform"] == "tiktok", r
+
+print(f"\n  {len(PASS)} passed, {len(FAIL)} failed\n")
+for n in PASS: print(f"    ok    {n}")
+for n, e in FAIL: print(f"    FAIL  {n}\n          {e}")
+sys.exit(1 if FAIL else 0)

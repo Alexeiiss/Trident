@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "trident",
+  "description": "Trident: YouTube, TikTok and Instagram skills for Claude",
+  "owner": {
+    "name": "Alexandr Badasco"
+  },
+  "plugins": [
+    {
+      "name": "trident",
+      "description": "Fourteen Claude skills for creators on YouTube, TikTok and Instagram, in English, Czech, Russian and Romanian: scored hooks off 26 formulas, click-surface and caption linters with current platform limits, one-video-to-three-platforms packaging, multi-part series splitting and handoff diagnosis, retention reading for long and short form, edit decision lists, clips, chapters, comments, planning, audits and an outlier finder.",
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/Alexeiiss/trident"
+    }
+  ]
+}
