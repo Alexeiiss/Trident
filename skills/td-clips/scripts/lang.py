@@ -70,8 +70,9 @@ LEX = {
  "cs": {
   "conflict": ["sestr", "bratr", "mám", "matk", "otc", "táta", "manžel", "přítel", "tchyn", "šéf", "soused", "svatb", "rozvod", "podved", "ukradl", "lhal", "zradil", "křičel", "vyhodil", "armád", "válk", "nepřítel", "hlad", "zim"],
   # 2nd person: pronouns + the -š verb ending (děláš, víš, můžeš) handled in address()
-  "you": ["ty", "tě", "tebe", "tobě", "tebou", "tvůj", "tvoj", "tvá", "tvé", "tvého", "tvým",
-          "tvou", "vy", "vás", "vám", "vámi", "váš", "vaš", "jsi", "seš"],
+  "you": ["ty", "ti", "tě", "tebe", "tobě", "tebou", "tvůj", "tvoje", "tvoji", "tvá", "tvé", "tvého",
+          "tvému", "tvým", "tvých", "tvou", "vy", "vás", "vám", "vámi", "váš", "vaše", "vašeho", "vašim",
+          "vašich", "jsi", "seš"],
   "you_exact": True,
   "stake": ["ztrat", "ztrác", "skonč", "vzd", "přijd", "přišel", "přišl", "prohr", "chyb", "plýtv", "vyhaz",
             "stoj", "riskuj", "rizik", "nikdy", "přestaň", "konec", "zemř", "smrt", "mrtv",
