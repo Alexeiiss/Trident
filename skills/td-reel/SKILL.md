@@ -63,10 +63,11 @@ I had walked in five minutes too early.
 | `--audio-dir` / `--narration` (the creator's own voice) | any | best, most trusted | phone recordings |
 | `--voice kokoro:af_heart` (or `am_michael`, `bf_emma`...) | **English only** | natural | `pip install kokoro-onnx`; ~340 MB model downloaded once from GitHub |
 | `--voice piper:/path/voice.onnx` | Czech, Russian, Romanian and many more | clearly synthetic | `pip install piper-tts` + a Piper voice file |
+| `--audio-dir` with voice files from `/td-generate` (ElevenLabs) | Czech, Russian, Romanian, English... | natural | the ElevenLabs connector, credits |
 | `--voice none` | any | captions only | nothing |
 
-**For Czech, Russian and Romanian, recommend the creator's own recording first** - the free
-synthetic voices in those languages sound robotic, and a robotic narrator costs retention. Ask for
+**For Czech, Russian and Romanian, recommend the creator's own recording or an ElevenLabs voice
+(`/td-generate`, one file per line) first** - the free offline voices in those languages sound robotic, and a robotic narrator costs retention. Ask for
 either one file per line (`01.m4a`, `02.m4a`... in a folder, same order as the script) or one take
 of the whole script; with one take, a Whisper JSON transcript gives exact caption timing (without
 it, captions are spread over the take and drift).

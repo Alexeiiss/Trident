@@ -2,7 +2,7 @@
 
 *Three prongs, one pack: YouTube, TikTok and Instagram.*
 
-**Eighteen Claude skills for creators on YouTube, TikTok and Instagram — in English, Czech, Russian
+**Twenty Claude skills for creators on YouTube, TikTok and Instagram — in English, Czech, Russian
 and Romanian.** No API key, nothing to connect, no signup. Plain Python 3 tools; the analysis tools need nothing else, the video and cover tools need ffmpeg and Pillow.
 
 Most creator prompt packs assume one thing: an English-speaking person talking to a camera on
@@ -27,7 +27,7 @@ clips, history) and multi-part series that bleed viewers at every part.
 - **Series.** Split a story so each part ends on a hook; find which handoff loses the audience and
   whether it is the previous part's ending or the next part's packaging.
 
-## The eighteen
+## The twenty
 
 | command | what it does |
 | --- | --- |
@@ -48,6 +48,8 @@ clips, history) and multi-part series that bleed viewers at every part.
 | `/td-reel` | **New in 1.1.** A script into a finished 9:16 short: voice (natural English voice, any Piper voice, or your own recordings), word-by-word captions, hook text, background video or images, progress bar, ducked music. |
 | `/td-subtitles` | **New in 1.1.** Word-by-word captions from a transcript, styled for film clips, storytime or documentary, kept in the safe zone - as `.ass` or burnt in. |
 | `/td-cover` | **New in 1.1.** Covers and thumbnails - one post or a matching set for a series - safe zone, grid crop and contrast checked. |
+| `/td-studio` | **New in 1.2.** A CapCut-style editor: cut, split, join with 25 transitions, speed ramps, smooth slow-mo, reverse, freeze, 9:16 reframe with blurred background, punch-in zoom, titles, captions, picture-in-picture, stickers, green screen, filters and LUTs, blur, stabilize, voice effects, denoise, ducked music, sound effects, auto-cut silences, beat-synced cuts, platform export. Local, no credits. |
+| `/td-generate` | **New in 1.2.** Images, video, natural Czech / Russian / Romanian voices, music, sound effects, dubbing, lip-sync, background removal and upscaling through the ElevenLabs connector - with consistent characters across a series. |
 | `/td-stats` | **New in 1.1.** Weekly medians, trend, posts to repeat and to drop, and series carry, from the platforms' own exports. |
 
 ## Install
@@ -97,7 +99,9 @@ python3 shared/reel.py story.txt -o part1.mp4 --voice kokoro:af_heart --bg slime
 python3 shared/subtitles.py clip.srt --style clip --burn clip.mp4 -o out.mp4    # word captions
 python3 shared/cover.py --text "The gold" --parts 3 --label "PART {n}" -o c.png # series covers
 python3 shared/stats.py "Table data.csv"                                        # weekly report
-python3 tests/run_tests.py                                                      # 29 end-to-end tests
+python3 shared/studio.py join out.mp4 a.mp4 b.mp4 --transition slideup --aspect 9:16  # CapCut-style edits
+python3 shared/studio.py beatcut out.mp4 a.mp4 b.mp4 --music song.mp3            # cut on the beat
+python3 tests/run_tests.py                                                      # 32 end-to-end tests
 ```
 
 Transcripts: `.srt`, `.vtt` (YouTube's rolling auto-captions are de-duplicated) and Whisper `.json`.
@@ -113,9 +117,9 @@ Transcripts: `.srt`, `.vtt` (YouTube's rolling auto-captions are de-duplicated) 
 - **Nothing invents a number.** A skill that wants a figure it does not have asks for it.
 - **Read, do not scrape.** `/td-trends` uses public listings only and never your login.
 
-**Voices.** `/td-reel`'s natural voice (Kokoro) speaks English only. For Czech, Russian and Romanian
-the free synthetic voices sound robotic - record your own lines on your phone and pass the folder
-with `--audio-dir`; it is also what viewers trust most.
+**Voices.** `/td-reel`'s offline natural voice (Kokoro) speaks English only. For Czech, Russian and
+Romanian use an ElevenLabs voice through `/td-generate`, or record your own lines on your phone - pass
+the folder with `--audio-dir`. The free offline voices in those languages sound robotic.
 
 ## Credits and licence
 

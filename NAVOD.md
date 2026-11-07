@@ -1,6 +1,6 @@
 # Trident – návod česky
 
-18 skillů pro Claude na YouTube, TikTok a Instagram. Umí češtinu, ruštinu, rumunštinu a angličtinu.
+20 skillů pro Claude na YouTube, TikTok a Instagram. Umí češtinu, ruštinu, rumunštinu a angličtinu.
 Nic nepublikují – napíšou text, ty ho vložíš a zveřejníš.
 
 ## Instalace
@@ -39,12 +39,14 @@ ho dej do Projektu – v aplikaci Claude se soubory mezi chaty neuchovávají.
 | `/td-reel` | **nové:** ze scénáře hotové video 9:16 – hlas, titulky po slovech, pozadí, hudba |
 | `/td-subtitles` | **nové:** titulky po slovech jako v CapCutu (.ass nebo rovnou ve videu) |
 | `/td-cover` | **nové:** covery a thumbnaily, jednotná šablona pro celou sérii |
+| `/td-studio` | **nové:** střižna jako CapCut – stříhání, 25 přechodů, zpomalení, 9:16 s rozmazaným pozadím, text, titulky, obraz v obraze, green screen, filtry, hlasové efekty, hudba, střih do rytmu, export |
+| `/td-generate` | **nové:** obrázky, videa, české/ruské/rumunské hlasy, hudba a efekty přes ElevenLabs (stojí kredity) |
 | `/td-stats` | **nové:** týdenní přehled z exportů – roste účet, nebo padá? |
 
 ## Hlas ve videích (`/td-reel`)
 
-Přirozený syntetický hlas (Kokoro) umí jen anglicky. Pro češtinu, ruštinu a rumunštinu nahraj
-věty na telefon (01.m4a, 02.m4a… jedna věta = jeden soubor) a dej je do složky – Trident je
+Offline hlas (Kokoro) umí jen anglicky. Pro češtinu, ruštinu a rumunštinu použij hlas z ElevenLabs
+(`/td-generate`), nebo nahraj věty na telefon (01.m4a, 02.m4a… jedna věta = jeden soubor) a dej je do složky – Trident je
 použije místo syntetického hlasu.
 
 ## Příklady

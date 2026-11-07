@@ -350,6 +350,58 @@ def _():
     s = r["series"][0]["parts"]
     assert [p["views"] for p in s] == [52000, 14000, 9800] and s[1]["carry"] == 26.9, s
 
+# ------------------------------------------------------------------ studio (1.2)
+def studio(*a):
+    out = run("studio.py", *a).stdout.strip().splitlines()
+    return json.loads(out[-1]) if out else {}
+
+def make_clip(name, size="1280x720", d=6, audio=True, src="testsrc2"):
+    p = os.path.join(TMP, name)
+    cmd = ["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"{src}=s={size}:r=30:d={d}"]
+    if audio: cmd += ["-f", "lavfi", "-i", f"sine=f=330:d={d}", "-shortest"]
+    subprocess.run(cmd + ["-c:v", "libx264", "-pix_fmt", "yuv420p", p], check=True)
+    return p
+
+@test("studio: cut by EDL, split, join with a transition into 9:16, speed")
+def _():
+    if not HAS_FFMPEG: return
+    a = make_clip("sa.mp4"); b = make_clip("sb.mp4", "720x1280", 5, audio=False)
+    edl = write("edl.json", json.dumps({"cuts": [{"kind": "DEAD", "start": 1.0, "end": 2.0}]}))
+    assert abs(studio("cut", a, os.path.join(TMP, "c.mp4"), "--edl", edl)["seconds"] - 5.0) < 0.15
+    j = studio("join", os.path.join(TMP, "j.mp4"), a, b, "--transition", "slideup", "--duration", "0.5", "--aspect", "9:16")
+    assert j["size"] == "1080x1920" and abs(j["seconds"] - 10.5) < 0.2, j
+    assert abs(studio("speed", a, os.path.join(TMP, "sp.mp4"), "--factor", "2")["seconds"] - 3.0) < 0.15
+
+@test("studio: reframe with blurred background, text, overlay, color, export")
+def _():
+    if not HAS_FFMPEG: return
+    a = make_clip("sc.mp4")
+    r = studio("reframe", a, os.path.join(TMP, "r.mp4"), "--aspect", "9:16", "--mode", "blur")
+    assert r["size"] == "1080x1920"
+    t = studio("text", os.path.join(TMP, "r.mp4"), os.path.join(TMP, "t.mp4"), "--text", "Díl 2: Zrádce", "--box")
+    assert t["size"] == "1080x1920"
+    logo = os.path.join(TMP, "logo.png")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "color=c=orange:s=200x200", "-frames:v", "1", logo], check=True)
+    assert studio("overlay", a, os.path.join(TMP, "o.mp4"), "--layer", logo, "--pos", "bottom-right")["seconds"] > 5.5
+    assert studio("color", a, os.path.join(TMP, "co.mp4"), "--preset", "cinematic")["seconds"] > 5.5
+    e = studio("export", a, os.path.join(TMP, "e.mp4"), "--platform", "reels")
+    assert e["size"] == "1080x1920"
+
+@test("studio: silences are cut, beats are found at the right tempo")
+def _():
+    if not HAS_FFMPEG: return
+    sil = os.path.join(TMP, "sil.mp4")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "testsrc2=s=640x360:r=30:d=8", "-f", "lavfi", "-i", "sine=f=300:d=8",
+                    "-filter_complex", "[1:a]volume='if(between(t,2,4),0,1)':eval=frame[a]", "-map", "0:v", "-map", "[a]",
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", sil], check=True)
+    r = studio("silence", sil, os.path.join(TMP, "ns.mp4"))
+    assert 5.9 <= r["seconds"] <= 6.5, r
+    beat = os.path.join(TMP, "beat.wav")
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", "sine=f=60:d=8,volume=3", "-f", "lavfi", "-i", "anoisesrc=d=8:a=0.02",
+                    "-filter_complex", "[0:a]volume='if(lt(mod(t,0.5),0.08),1,0)':eval=frame[k];[k][1:a]amix=inputs=2[m]", "-map", "[m]", beat], check=True)
+    b = json.loads(run("studio.py", "beats", beat).stdout)
+    assert b["bpm"] and 110 <= b["bpm"] <= 130, b
+
 print(f"\n  {len(PASS)} passed, {len(FAIL)} failed\n")
 for n in PASS: print(f"    ok    {n}")
 for n, e in FAIL: print(f"    FAIL  {n}\n          {e}")

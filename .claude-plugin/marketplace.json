@@ -8,7 +8,7 @@
   "plugins": [
     {
       "name": "trident",
-      "description": "Eighteen Claude skills for creators on YouTube, TikTok and Instagram, in English, Czech, Russian and Romanian: scored hooks off 26 formulas, click-surface and caption linters with current platform limits, one-video-to-three-platforms packaging, multi-part series splitting and handoff diagnosis, retention reading for long and short form, edit decision lists, clips, chapters, comments, planning, audits, an outlier finder - and a renderer that turns a script into a finished captioned short, word-by-word subtitles, series covers and weekly stats from the platforms' exports.",
+      "description": "Twenty Claude skills for creators on YouTube, TikTok and Instagram, in English, Czech, Russian and Romanian: scored hooks off 26 formulas, click-surface and caption linters with current platform limits, one-video-to-three-platforms packaging, multi-part series splitting and handoff diagnosis, retention reading for long and short form, edit decision lists, clips, chapters, comments, planning, audits, an outlier finder - and a renderer that turns a script into a finished captioned short, word-by-word subtitles, series covers, weekly stats, a CapCut-style editor (studio.py) and AI generation of images, video, voice and music through the ElevenLabs connector.",
       "source": "./",
       "category": "productivity",
       "homepage": "https://github.com/Alexeiiss/trident"
