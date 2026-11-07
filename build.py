@@ -12,21 +12,25 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 SRC, SHARED = os.path.join(ROOT, "src"), os.path.join(ROOT, "shared")
 DIST = os.path.join(ROOT, "dist")
 OUT = os.path.join(DIST, "trident")
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 DEPS = {"hookscore.py": ["lang.py", "hooks.json", "platforms.json"],
         "package.py": ["lang.py", "platforms.json"], "caption.py": ["lang.py", "platforms.json"],
         "deadair.py": ["lang.py", "transcript.py"], "chapters.py": ["lang.py", "transcript.py"],
         "retention.py": ["platforms.json", "transcript.py"],
         "series.py": ["lang.py", "transcript.py", "platforms.json"],
-        "trends.py": ["lang.py", "hooks.json"]}
+        "trends.py": ["lang.py", "hooks.json"],
+        "subtitles.py": ["transcript.py", "fonts"], "reel.py": ["subtitles.py", "transcript.py", "fonts"],
+        "cover.py": ["platforms.json", "fonts"], "stats.py": []}
 
 TOOLS = {"td-profile": [], "td-script": ["hookscore.py"], "td-package": ["package.py"],
          "td-caption": ["caption.py"], "td-crosspost": ["package.py", "caption.py"],
          "td-edit": ["deadair.py"], "td-clips": ["hookscore.py", "deadair.py"],
          "td-series": ["series.py", "hookscore.py"], "td-chapters": ["chapters.py"],
          "td-retention": ["retention.py"], "td-plan": [], "td-trends": ["trends.py"],
-         "td-comment": [], "td-audit": ["package.py", "hookscore.py", "series.py"]}
+         "td-comment": [], "td-audit": ["package.py", "hookscore.py", "series.py", "stats.py"],
+         "td-reel": ["reel.py", "hookscore.py"], "td-subtitles": ["subtitles.py"], "td-cover": ["cover.py", "package.py"],
+         "td-stats": ["stats.py", "series.py"]}
 
 def blocks():
     raw = open(os.path.join(SRC, "blocks.md"), encoding="utf-8").read()
@@ -49,10 +53,16 @@ def main():
         os.makedirs(d)
         open(os.path.join(d, "SKILL.md"), "w", encoding="utf-8").write(text)
         files = set()
-        for t in tools: files |= {t, *DEPS[t]}
+        for t in tools:
+            files |= {t, *DEPS[t]}
+            for dep in DEPS[t]:
+                files |= set(DEPS.get(dep, []))
         if files:
             os.makedirs(os.path.join(d, "scripts"))
-            for f in sorted(files): shutil.copy(os.path.join(SHARED, f), os.path.join(d, "scripts", f))
+            for f in sorted(files):
+                src = os.path.join(SHARED, f)
+                if os.path.isdir(src): shutil.copytree(src, os.path.join(d, "scripts", f))
+                else: shutil.copy(src, os.path.join(d, "scripts", f))
         if skill == "td-profile":
             os.makedirs(os.path.join(d, "templates"))
             shutil.copy(os.path.join(ROOT, "templates", "profile.md"), os.path.join(d, "templates", "profile.md"))
@@ -62,11 +72,12 @@ def main():
     shutil.copytree(SHARED, os.path.join(OUT, "shared"), ignore=shutil.ignore_patterns("__pycache__"))
     shutil.copytree(os.path.join(ROOT, "tests"), os.path.join(OUT, "tests"), ignore=shutil.ignore_patterns("__pycache__"))
     open(os.path.join(OUT, ".gitignore"), "w").write("__pycache__/\n*.pyc\n.DS_Store\n")
-    desc = ("Fourteen Claude skills for creators on YouTube, TikTok and Instagram, in English, Czech, Russian "
+    desc = ("Eighteen Claude skills for creators on YouTube, TikTok and Instagram, in English, Czech, Russian "
             "and Romanian: scored hooks off 26 formulas, click-surface and caption linters with current platform "
             "limits, one-video-to-three-platforms packaging, multi-part series splitting and handoff diagnosis, "
             "retention reading for long and short form, edit decision lists, clips, chapters, comments, planning, "
-            "audits and an outlier finder.")
+            "audits, an outlier finder - and a renderer that turns a script into a finished captioned short, "
+            "word-by-word subtitles, series covers and weekly stats from the platforms' exports.")
     json.dump({"name": "trident", "description": desc, "version": VERSION,
                "author": {"name": "Alexandr Badasco"}, "license": "MIT",
                "keywords": ["youtube", "tiktok", "instagram", "reels", "shorts", "creator", "hooks",

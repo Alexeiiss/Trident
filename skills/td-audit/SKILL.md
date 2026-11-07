@@ -18,6 +18,7 @@ do not eyeball what a tool can measure. Every tool takes `--json` and `--help`.
 python3 scripts/package.py --platform youtube titles.txt        # or --platform tiktok covers.txt
 python3 scripts/hookscore.py openings.txt --platform tiktok --format storytime
 python3 scripts/series.py stats --views "1:52000,2:14000,3:9800"
+python3 scripts/stats.py "Table data.csv"          # the trend, from the platform export
 ```
 
 ## Before you write
@@ -44,7 +45,8 @@ python3 scripts/series.py stats --views "1:52000,2:14000,3:9800"
    nothing else matters yet.
 3. **The first seconds of the three most recent** - 15 s on long-form, 3 s on short-form. Transcribe
    and score with `hookscore.py --platform <p> --format <f>`. This is where most accounts lose.
-4. **Rhythm** - consistency, not frequency. Bursts then silence lose to a steady pace.
+4. **Rhythm and trend** - consistency, not frequency; bursts then silence lose to a steady pace.
+   With an export, `stats.py` shows the weekly medians and whether the account is growing.
 5. **Series handoffs** - if the account posts parts, run `series.py stats` on the views per part.
 6. **Retention**, if they can export or screenshot it - `/td-retention`.
 7. **Platform fit** - if the same content works on one platform and dies on another, say whether

@@ -2,8 +2,8 @@
 
 *Three prongs, one pack: YouTube, TikTok and Instagram.*
 
-**Fourteen Claude skills for creators on YouTube, TikTok and Instagram — in English, Czech, Russian
-and Romanian.** No API key, nothing to connect, no signup. Plain Python 3 tools with no dependencies.
+**Eighteen Claude skills for creators on YouTube, TikTok and Instagram — in English, Czech, Russian
+and Romanian.** No API key, nothing to connect, no signup. Plain Python 3 tools; the analysis tools need nothing else, the video and cover tools need ffmpeg and Pillow.
 
 Most creator prompt packs assume one thing: an English-speaking person talking to a camera on
 YouTube. Trident assumes what creators actually run in 2026 — several accounts, several
@@ -27,7 +27,7 @@ clips, history) and multi-part series that bleed viewers at every part.
 - **Series.** Split a story so each part ends on a hook; find which handoff loses the audience and
   whether it is the previous part's ending or the next part's packaging.
 
-## The fourteen
+## The eighteen
 
 | command | what it does |
 | --- | --- |
@@ -45,6 +45,10 @@ clips, history) and multi-part series that bleed viewers at every part.
 | `/td-trends` | What is working in a niche, ranked by multiple over each account's own median. |
 | `/td-comment` | Comments triaged into four piles, replies in the account's voice and language, what to pin. |
 | `/td-audit` | The whole account, ending in ONE fix rather than twenty. |
+| `/td-reel` | **New in 1.1.** A script into a finished 9:16 short: voice (natural English voice, any Piper voice, or your own recordings), word-by-word captions, hook text, background video or images, progress bar, ducked music. |
+| `/td-subtitles` | **New in 1.1.** Word-by-word captions from a transcript, styled for film clips, storytime or documentary, kept in the safe zone - as `.ass` or burnt in. |
+| `/td-cover` | **New in 1.1.** Covers and thumbnails - one post or a matching set for a series - safe zone, grid crop and contrast checked. |
+| `/td-stats` | **New in 1.1.** Weekly medians, trend, posts to repeat and to drop, and series carry, from the platforms' own exports. |
 
 ## Install
 
@@ -67,7 +71,7 @@ Install these skills, then confirm /td-script works.
 project's `.claude/skills/`.
 
 **Claude apps (claude.ai / desktop):** download the per-skill zips from the
-[`downloads/`](downloads/) folder (all 14 in one: [`trident-claude-ai-skills-1.0.0.zip`](downloads/trident-claude-ai-skills-1.0.0.zip?raw=1), or one by one in [`downloads/skills/`](downloads/skills/)) and upload them in
+[`downloads/`](downloads/) folder (all 14 in one: [`trident-claude-ai-skills.zip`](downloads/trident-claude-ai-skills.zip?raw=1), or one by one in [`downloads/skills/`](downloads/skills/)) and upload them in
 Settings → Capabilities → Skills. Each zip carries its own tools.
 
 **Building from source:** the skills are generated from `src/` and `shared/` -
@@ -89,7 +93,11 @@ python3 shared/retention.py --points "0:100,3:62,10:45,30:30" --platform tiktok 
 python3 shared/series.py stats --views "1:120000,2:41000,3:30500"               # series handoffs
 python3 shared/series.py split story.srt --parts 3                              # where to cut
 python3 shared/trends.py yt-dlp.json --split-shorts --per-day                   # outliers
-python3 tests/run_tests.py                                                      # 22 end-to-end tests
+python3 shared/reel.py story.txt -o part1.mp4 --voice kokoro:af_heart --bg slime.mp4  # finished short
+python3 shared/subtitles.py clip.srt --style clip --burn clip.mp4 -o out.mp4    # word captions
+python3 shared/cover.py --text "The gold" --parts 3 --label "PART {n}" -o c.png # series covers
+python3 shared/stats.py "Table data.csv"                                        # weekly report
+python3 tests/run_tests.py                                                      # 29 end-to-end tests
 ```
 
 Transcripts: `.srt`, `.vtt` (YouTube's rolling auto-captions are de-duplicated) and Whisper `.json`.
@@ -105,8 +113,13 @@ Transcripts: `.srt`, `.vtt` (YouTube's rolling auto-captions are de-duplicated) 
 - **Nothing invents a number.** A skill that wants a figure it does not have asks for it.
 - **Read, do not scrape.** `/td-trends` uses public listings only and never your login.
 
+**Voices.** `/td-reel`'s natural voice (Kokoro) speaks English only. For Czech, Russian and Romanian
+the free synthetic voices sound robotic - record your own lines on your phone and pass the folder
+with `--audio-dir`; it is also what viewers trust most.
+
 ## Credits and licence
 
 MIT — see `LICENSE`. Trident is built on and extends
 [youtube-agent-skill](https://github.com/Jakeschincariol/youtube-agent-skill) by Jake Schincariol
-(MIT), whose original notice is kept in `LICENSE` as the licence requires.
+(MIT), whose original notice is kept in `LICENSE` as the licence requires. The bundled Inter font
+(`shared/fonts/`) is © The Inter Project Authors, SIL Open Font License 1.1 (`shared/fonts/OFL.txt`).

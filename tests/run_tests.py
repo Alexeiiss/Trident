@@ -251,6 +251,105 @@ def _():
     r = js("trends.py", write("tt.jsonl", lines), "--min", "3")
     assert r["outliers"][0]["platform"] == "tiktok", r
 
+# ------------------------------------------------------------------ subtitles / reel / cover / stats (1.1)
+import shutil as _sh
+HAS_FFMPEG = bool(_sh.which("ffmpeg"))
+try:
+    import PIL  # noqa: F401
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
+
+def probe(path):
+    p = subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration:stream=codec_type,width,height",
+                        "-of", "json", path], capture_output=True, text=True)
+    return json.loads(p.stdout)
+
+@test("subtitles: ASS keeps captions out of the bottom 20% and right 15%, highlights each word")
+def _():
+    s = write("cap.srt", srt([(0.3, 2.6, "Когда я вошла, моя сестра держала платье."), (2.8, 5.0, "Над камином. И улыбалась.")]))
+    out = os.path.join(TMP, "cap.ass")
+    run("subtitles.py", s, "-o", out, "--hook", "Она не знала, что он всё это время слушал за дверью", "--style", "storytime")
+    ass = open(out, encoding="utf-8").read()
+    style = [l for l in ass.splitlines() if l.startswith("Style: Cap,")][0].split(",")
+    margin_r, margin_v = int(style[20]), int(style[21])
+    assert margin_v >= 1920 * 0.2 and margin_r >= 1080 * 0.15, (margin_r, margin_v)
+    caps = [l for l in ass.splitlines() if l.startswith("Dialogue: 0,")]
+    assert len(caps) >= 11 and all("\\c&H0000D7FF" in l for l in caps), caps[:2]
+    hook = [l for l in ass.splitlines() if ",Hook," in l][0]
+    assert "\\N" in hook, hook                     # long hook is wrapped, not overflowing
+
+@test("subtitles: whisper word timings are used exactly")
+def _():
+    j = write("w.json", json.dumps({"segments": [{"start": 0, "end": 2, "text": "one two",
+             "words": [{"word": " one", "start": 0.5, "end": 0.9}, {"word": " two", "start": 1.4, "end": 1.8}]}]}))
+    out = os.path.join(TMP, "w.ass")
+    run("subtitles.py", j, "-o", out)
+    first = [l for l in open(out, encoding="utf-8").read().splitlines() if l.startswith("Dialogue: 0,")][0]
+    assert first.split(",")[1] == "0:00:00.50", first
+
+@test("reel: silent captions-only render has the right size and length")
+def _():
+    if not (HAS_FFMPEG and HAS_PIL): return
+    sc = write("story.txt", "# hook: She didn't know\n# label: PART 1\nMy sister held my dress over the fire.\nI walked in too early.\n")
+    out = os.path.join(TMP, "reel.mp4")
+    r = json.loads(run("reel.py", sc, "-o", out, "--voice", "none", "--pad").stdout.strip().splitlines()[-1])
+    pr = probe(out)
+    v = [s for s in pr["streams"] if s["codec_type"] == "video"][0]
+    assert (v["width"], v["height"]) == (1080, 1920), v
+    assert abs(float(pr["format"]["duration"]) - r["seconds"]) < 0.3, (pr["format"], r)
+    assert any(s["codec_type"] == "audio" for s in pr["streams"])
+
+@test("reel: own recordings, one per line, set the timing")
+def _():
+    if not HAS_FFMPEG: return
+    rec = os.path.join(TMP, "rec"); os.makedirs(rec, exist_ok=True)
+    for i, d in enumerate((1.5, 2.5), 1):
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "lavfi", "-i", f"sine=f=220:d={d}", os.path.join(rec, f"{i:02d}.wav")], check=True)
+    sc = write("story2.txt", "Line one is here.\nLine two is a bit longer.\n")
+    out = os.path.join(TMP, "reel2.mp4")
+    r = json.loads(run("reel.py", sc, "-o", out, "--audio-dir", rec, "--size", "1920x1080").stdout.strip().splitlines()[-1])
+    assert 4.3 <= r["seconds"] <= 5.2, r                     # 1.5 + 0.22 + 2.5 + lead/tail
+    bad = run("reel.py", write("story3.txt", "only one line\n"), "-o", out, "--audio-dir", rec, ok=False)
+    assert bad.returncode != 0 and "one per line" in (bad.stdout + bad.stderr)
+
+@test("cover: series of 3, contrast fixed with a scrim, word limit flagged on a thumbnail")
+def _():
+    if not HAS_PIL: return
+    from PIL import Image
+    bright = os.path.join(TMP, "white.png"); Image.new("RGB", (800, 800), (250, 250, 250)).save(bright)
+    base = os.path.join(TMP, "dac.png")
+    r = js("cover.py", "--text", "x", "--texts", "Kde je zlato|Zrádce promluvil|Poslední pevnost", "--parts", "3",
+           "--label", "DÍL {n}", "--bg", bright, "-o", base)
+    assert [os.path.basename(x["out"]) for x in r] == ["dac_1.png", "dac_2.png", "dac_3.png"], r
+    assert all(x["scrim"] and x["contrast"] >= 4.5 for x in r), r
+    assert Image.open(r[0]["out"]).size == (1080, 1920)
+    t = js("cover.py", "--text", "AI RAN MY WHOLE CHANNEL", "--size", "thumb", "-o", os.path.join(TMP, "t.png"))[0]
+    assert any("ceiling" in i for i in t["issues"]), t
+
+@test("stats: YouTube export - total row skipped, trend, outliers")
+def _():
+    rows = ["Content,Video title,Video publish time,Duration,Views", "Total,,,,999999"]
+    import datetime as _dt
+    d0 = _dt.date(2026, 9, 7)
+    for i in range(24):
+        d = d0 + _dt.timedelta(days=i * 2)
+        v = 1000 + (i % 3) * 50 + (800 if i >= 14 else 0)
+        if i == 4: v = 9000
+        rows.append(f'id{i},Video {i},"{d.strftime("%b")} {d.day}, {d.year}",0:45,"{v:,}"')
+    r = js("stats.py", write("yt.csv", "\n".join(rows)))["yt"]
+    assert r["posts"] == 24, r["posts"]
+    assert r["trend"] and r["trend"]["verdict"] == "growing", r["trend"]
+    assert r["repeat"][0]["views"] == 9000
+
+@test("stats: Czech headers, semicolons, spaces in numbers, series carry")
+def _():
+    c = write("cz.csv", "Datum;Název;Zhlédnutí\n01.10.2026;Dákové díl 1;52 000\n02.10.2026;Dákové díl 2;14 000\n"
+                        "03.10.2026;Dákové díl 3;9 800\n05.10.2026;Něco jiného;4 000\n")
+    r = js("stats.py", c)["cz"]
+    s = r["series"][0]["parts"]
+    assert [p["views"] for p in s] == [52000, 14000, 9800] and s[1]["carry"] == 26.9, s
+
 print(f"\n  {len(PASS)} passed, {len(FAIL)} failed\n")
 for n in PASS: print(f"    ok    {n}")
 for n, e in FAIL: print(f"    FAIL  {n}\n          {e}")

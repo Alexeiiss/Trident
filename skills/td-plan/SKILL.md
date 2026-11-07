@@ -31,7 +31,8 @@ A plan that does not fit the week is a list of regrets. Ask two things before wr
 
 - **One anchor** - the piece the week is built on: a long video, a story, or a series.
 - **Cut, do not write separately** - the short-form posts come out of the anchor (`/td-clips`,
-  `/td-series`), then go to each platform with their own packaging (`/td-crosspost`).
+  `/td-series`), get rendered (`/td-reel`) and covered (`/td-cover`), then go to each platform with
+  their own packaging (`/td-crosspost`). Check last week first with `/td-stats`.
 - **One cheap one** - built from what exists: a reply to the most-asked comment, a follow-up, a
   re-cut of last week's best performer with a new first line.
 

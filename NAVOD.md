@@ -1,12 +1,12 @@
 # Trident – návod česky
 
-14 skillů pro Claude na YouTube, TikTok a Instagram. Umí češtinu, ruštinu, rumunštinu a angličtinu.
+18 skillů pro Claude na YouTube, TikTok a Instagram. Umí češtinu, ruštinu, rumunštinu a angličtinu.
 Nic nepublikují – napíšou text, ty ho vložíš a zveřejníš.
 
 ## Instalace
 
 **Aplikace Claude (web / desktop):** stáhni zipy z
-[`downloads/`](downloads/) (všech 14 najednou: [`trident-claude-ai-skills-1.0.0.zip`](downloads/trident-claude-ai-skills-1.0.0.zip?raw=1)) a nahraj je v
+[`downloads/`](downloads/) (všech 14 najednou: [`trident-claude-ai-skills.zip`](downloads/trident-claude-ai-skills.zip?raw=1)) a nahraj je v
 Nastavení → Capabilities → Skills. Každý skill je samostatný zip i se svými nástroji.
 
 **Claude Code:** `/plugin marketplace add Alexeiiss/trident` a pak `/plugin install trident`,
@@ -36,8 +36,21 @@ ho dej do Projektu – v aplikaci Claude se soubory mezi chaty neuchovávají.
 | `/td-trends` | co v nice funguje, měřeno proti mediánu každého kanálu |
 | `/td-comment` | odpovědi na komentáře, co připnout |
 | `/td-audit` | rozbor účtu, končí JEDNOU hlavní opravou |
+| `/td-reel` | **nové:** ze scénáře hotové video 9:16 – hlas, titulky po slovech, pozadí, hudba |
+| `/td-subtitles` | **nové:** titulky po slovech jako v CapCutu (.ass nebo rovnou ve videu) |
+| `/td-cover` | **nové:** covery a thumbnaily, jednotná šablona pro celou sérii |
+| `/td-stats` | **nové:** týdenní přehled z exportů – roste účet, nebo padá? |
+
+## Hlas ve videích (`/td-reel`)
+
+Přirozený syntetický hlas (Kokoro) umí jen anglicky. Pro češtinu, ruštinu a rumunštinu nahraj
+věty na telefon (01.m4a, 02.m4a… jedna věta = jeden soubor) a dej je do složky – Trident je
+použije místo syntetického hlasu.
 
 ## Příklady
+
+- „/td-reel udělej z dílu 1 video, pozadí slime.mp4, moje nahrávky jsou ve složce dil1/“
+- „/td-stats tady je export z YouTube Studia – jak se mi daří?“
 
 - „/td-series rozděl tenhle příběh o Dácích na 3 díly pro TikTok“ (přilož titulky nebo text)
 - „/td-series díl 1 měl 52 000 zhlédnutí, díl 2 14 000, díl 3 9 800 – proč?“

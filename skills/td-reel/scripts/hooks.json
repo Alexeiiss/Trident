@@ -1,0 +1,827 @@
+{
+ "version": "2.0",
+ "note": "26 hook formulas for YouTube, TikTok and Instagram. A hook confirms the promise of the title/cover, raises a question the viewer cannot close, and proves the payoff exists. On short-form the window is the first 1-3 seconds, not 15. `match` is English, `i18n` holds Czech, Russian and Romanian patterns. `formats` says which video formats the formula suits: talking-head, narrated, storytime, clip, series, history.",
+ "rules": [
+  "Confirm the title in the first sentence. A hook that ignores its own title is why people leave at 0:08.",
+  "One idea. A hook carrying two promises keeps neither.",
+  "Specific beats big. '400 to 200,000 in seven months' outperforms 'massive growth'.",
+  "Show the artifact inside 20 seconds if you promised one.",
+  "Never open with who you are. The subscribe pitch has not been earned yet.",
+  "On short-form, the on-screen text and the first spoken line are two hooks, not one. They must not say the same words.",
+  "In a series, never open part 2+ with a recap or a teaser of something later. One reorienting line, then continue."
+ ],
+ "hooks": [
+  {
+   "id": "the-statistic",
+   "name": "The Statistic",
+   "shape": "A number the viewer did not know, stated flat, then the consequence.",
+   "example": "97% of the people who start a channel quit before video 30. Here is what the other 3% do differently.",
+   "fails_when": "Dies if the number is vague or unverifiable. Say the source out loud.",
+   "match": [
+    "\\b\\d+(\\.\\d+)?\\s?%",
+    "\\b\\d+ (out of|in) \\d+\\b",
+    "\\b\\d{2,}(,\\d{3})+\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated",
+    "series"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b\\d+ (z|ze) \\d+\\b",
+     "\\b\\d+\\s?(tis|mil|milion)"
+    ],
+    "ru": [
+     "\\b\\d+ из \\d+\\b",
+     "\\b\\d+\\s?(тыс|млн|миллион)"
+    ],
+    "ro": [
+     "\\b\\d+ din \\d+\\b",
+     "\\b\\d+\\s?(mii|mil|milioane)"
+    ]
+   }
+  },
+  {
+   "id": "someone-elses-result",
+   "name": "Someone Else's Result",
+   "shape": "A named person's outcome, then the mechanism.",
+   "example": "This channel went from 400 subscribers to 200,000 in seven months on one format. I mapped it.",
+   "fails_when": "Do not invent the number. If you cannot name the channel, use a different formula.",
+   "match": [
+    "\\bthis (channel|guy|creator|account)\\b",
+    "\\bwent from .* to\\b",
+    "\\bin (a|one|two|three|\\d+) (week|month|year)s?\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated"
+   ],
+   "i18n": {
+    "cs": [
+     "\\btenhle (kanál|chlap|člověk|účet)\\b",
+     "\\bz .* na .* za\\b"
+    ],
+    "ru": [
+     "\\bэтот (канал|парень|человек|аккаунт)\\b",
+     "\\bс .* до .* за\\b"
+    ],
+    "ro": [
+     "\\bacest (canal|tip|om|cont)\\b",
+     "\\bde la .* la .* în\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-mistake",
+   "name": "The Mistake",
+   "shape": "Name the error the viewer is probably making right now.",
+   "example": "Your first 30 seconds are why nobody finishes your videos. It is not the topic.",
+   "fails_when": "Only works if the mistake is common and the viewer can check it in one second.",
+   "match": [
+    "\\byou('re| are) (probably |still )?(doing|making)\\b",
+    "\\bthe (mistake|reason) (everyone|most people|nobody)\\b",
+    "\\bstop (doing )?\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b(děláš|dělají) (to )?(špatně|chybu)\\b",
+     "\\bchyb(a|u), kterou\\b",
+     "\\bpřestaň\\b"
+    ],
+    "ru": [
+     "\\b(ты|все) (делаешь|делают) (это )?неправильно\\b",
+     "\\bошибк(а|у), которую\\b",
+     "\\bхватит\\b"
+    ],
+    "ro": [
+     "\\bfaci (asta )?greșit\\b",
+     "\\bgreșeala pe care\\b",
+     "\\bnu mai\\b"
+    ]
+   }
+  },
+  {
+   "id": "contrarian-flip",
+   "name": "Contrarian Flip",
+   "shape": "State the accepted advice, then reject it.",
+   "example": "Everyone says post daily. I posted once a week for a year and tripled the channel.",
+   "fails_when": "Needs evidence in the next 15 seconds or it reads as contrarian for its own sake.",
+   "match": [
+    "\\beveryone (says|thinks|tells you)\\b",
+    "\\bis (actually )?wrong\\b",
+    "\\bnobody (tells|talks about)\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bvšichni (říkají|tvrdí|si myslí)\\b",
+     "\\bje (to )?(blbost|špatně|mýtus)\\b",
+     "\\bnikdo ti neřekne\\b"
+    ],
+    "ru": [
+     "\\bвсе (говорят|думают|считают)\\b",
+     "\\bэто (миф|неправда|ложь)\\b",
+     "\\bникто не (скажет|говорит)\\b"
+    ],
+    "ro": [
+     "\\btoată lumea (spune|crede)\\b",
+     "\\beste (un mit|greșit|fals)\\b",
+     "\\bnimeni nu (îți spune|vorbește)\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-reveal",
+   "name": "The Reveal",
+   "shape": "Promise a specific thing will be shown, then show it.",
+   "example": "I am going to show you the exact prompt, on screen, that wrote this video.",
+   "fails_when": "You have to actually show it, early. A reveal at 8:00 is a retention cliff at 1:00.",
+   "match": [
+    "\\bI('m| am) going to show you\\b",
+    "\\bhere('s| is) (the|exactly)\\b",
+    "\\bon screen\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bukážu ti\\b",
+     "\\btady je (přesně|ten|ta|to)\\b"
+    ],
+    "ru": [
+     "\\bя (покажу|показываю) (тебе|вам)\\b",
+     "\\bвот (он|она|оно|тот самый)\\b"
+    ],
+    "ro": [
+     "\\bîți arăt\\b",
+     "\\biată (exact|cum)\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-superlative",
+   "name": "The Superlative",
+   "shape": "The single best/worst/fastest of a category.",
+   "example": "This is the fastest way to turn one long video into thirty Shorts.",
+   "fails_when": "Superlatives are cheap. Earn it by naming what it beat.",
+   "match": [
+    "\\bthe (best|worst|fastest|easiest|only)\\b",
+    "\\bnumber one\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "clip"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bnej\\w+ (způsob|věc|místo|chyba)\\b",
+     "\\bjedin(ý|á|é)\\b"
+    ],
+    "ru": [
+     "\\bсам(ый|ая|ое) \\w+",
+     "\\bединственн"
+    ],
+    "ro": [
+     "\\bcel mai \\w+\\b",
+     "\\bsingur(ul|a)\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-clock",
+   "name": "The Clock",
+   "shape": "Bound the payoff in time.",
+   "example": "In the next six minutes you will have a working title, thumbnail and script for your next video.",
+   "fails_when": "The clock has to be true. Overrun it and the next video's hook is not believed.",
+   "match": [
+    "\\bin (the next )?\\d+ (seconds|minutes|hours)\\b",
+    "\\bby the end of this video\\b",
+    "\\bunder \\d+\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bza (\\d+|pár) (sekund|minut|hodin)\\b",
+     "\\bdo konce (tohoto|téhle) videa\\b"
+    ],
+    "ru": [
+     "\\bза (\\d+|пару) (секунд|минут|час)\\w*\\b",
+     "\\bк концу (этого )?видео\\b"
+    ],
+    "ro": [
+     "\\bîn (\\d+|câteva) (secunde|minute|ore)\\b",
+     "\\bpână la finalul\\b"
+    ]
+   }
+  },
+  {
+   "id": "i-tried-it",
+   "name": "I Tried It",
+   "shape": "First-person experiment with a stated cost.",
+   "example": "I let an AI run my channel for 30 days. I did not touch the uploads.",
+   "fails_when": "Needs a real cost - time, money, risk - or there is no stake.",
+   "match": [
+    "\\bI (tried|spent|tested|let|gave)\\b",
+    "\\bfor \\d+ (days|weeks|months)\\b",
+    "\\bso you don'?t have to\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b(zkusil|zkusila|testoval|testovala|strávil|strávila) jsem\\b",
+     "\\b\\d+ (dní|dnů|týdnů|měsíců)\\b"
+    ],
+    "ru": [
+     "\\bя (попробовал|попробовала|провёл|провела|тестировал)\\b",
+     "\\b\\d+ (дней|недел|месяц)\\w*\\b"
+    ],
+    "ro": [
+     "\\bam (încercat|testat|petrecut)\\b",
+     "\\btimp de \\d+ (zile|săptămâni|luni)\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-question",
+   "name": "The Question",
+   "shape": "Ask the exact question the viewer typed into search.",
+   "example": "Why do your videos die at 30 seconds when the topic is fine?",
+   "fails_when": "Must be the viewer's question, not yours. Pull it from your own comments.",
+   "match": [
+    "^(why|how|what|when|should|can|do|does|is)\\b",
+    "\\?\\s*$"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated",
+    "clip"
+   ],
+   "i18n": {
+    "cs": [
+     "^(proč|jak|co|kdy|kdo|můžeš|je)\\b",
+     "\\?\\s*$"
+    ],
+    "ru": [
+     "^(почему|как|что|когда|кто|зачем|можно)\\b",
+     "\\?\\s*$"
+    ],
+    "ro": [
+     "^(de ce|cum|ce|când|cine|poți)\\b",
+     "\\?\\s*$"
+    ]
+   }
+  },
+  {
+   "id": "the-before-after",
+   "name": "Before and After",
+   "shape": "Two states, one cut between them.",
+   "example": "This was my thumbnail. This is my thumbnail now. Same video, four times the click-through.",
+   "fails_when": "Only works with a visual. Do not use it on a talking-head-only video.",
+   "match": [
+    "\\bbefore\\b.*\\bafter\\b",
+    "\\bthis was\\b.*\\bthis is\\b",
+    "\\bused to\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "clip"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bpředtím\\b.*\\bteď\\b",
+     "\\btohle bylo\\b.*\\btohle je\\b",
+     "\\bdřív\\b"
+    ],
+    "ru": [
+     "\\bраньше\\b.*\\bсейчас\\b",
+     "\\bбыло\\b.*\\bстало\\b",
+     "\\bдо и после\\b"
+    ],
+    "ro": [
+     "\\binainte\\b.*\\bacum\\b",
+     "\\bera\\b.*\\beste\\b",
+     "\\bînainte și după\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-teardown",
+   "name": "The Teardown",
+   "shape": "Take a real thing apart in public.",
+   "example": "I pulled the nine most-viewed AI videos of the month and broke down what the titles share.",
+   "fails_when": "Name what you pulled and how many. A teardown of one example is an anecdote.",
+   "match": [
+    "\\b(broke|break|breaking) (it )?down\\b",
+    "\\bteardown\\b",
+    "\\banalys(ed|ed|is|e)\\b",
+    "\\bI pulled\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b(rozebral|rozebrala|rozeberu|analyzoval)\\b"
+    ],
+    "ru": [
+     "\\b(разобрал|разберу|разбор|проанализировал)\\w*\\b"
+    ],
+    "ro": [
+     "\\b(am analizat|analizez|desfac)\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-stack",
+   "name": "The Stack",
+   "shape": "Two named tools combined into one outcome.",
+   "example": "Claude plus your YouTube Studio export gives you next week's upload schedule in one prompt.",
+   "fails_when": "Both tools must be nameable and the outcome must need both.",
+   "match": [
+    "\\b\\w+ (plus|\\+) \\w+\\b",
+    "\\bcombine\\b",
+    "\\btogether\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b\\w+ (plus|\\+|a) \\w+ (ti )?(dá|udělá)\\b",
+     "\\bspoj\\w*\\b"
+    ],
+    "ru": [
+     "\\b\\w+ (плюс|\\+) \\w+\\b",
+     "\\bсовмест\\w*\\b"
+    ],
+    "ro": [
+     "\\b\\w+ (plus|\\+) \\w+\\b",
+     "\\bcombin\\w*\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-warning",
+   "name": "The Warning",
+   "shape": "A cost the viewer is about to pay.",
+   "example": "Do not upload another video until you check this one setting.",
+   "fails_when": "If the cost is small the hook is a lie. Reserve it.",
+   "match": [
+    "\\bdo not\\b",
+    "\\bdon'?t (upload|post|publish|start)\\b",
+    "\\bbefore you\\b",
+    "\\bstop\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bnedělej\\b",
+     "\\bnež (začneš|nahraješ|zveřejníš)\\b",
+     "\\bpozor\\b"
+    ],
+    "ru": [
+     "\\bне (делай|загружай|публикуй)\\b",
+     "\\bпрежде чем\\b",
+     "\\bосторожно\\b"
+    ],
+    "ro": [
+     "\\bnu (face|posta|încărca)\\b",
+     "\\bînainte să\\b",
+     "\\batenție\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-list",
+   "name": "The List",
+   "shape": "A counted set, with the count in the first line.",
+   "example": "Seven things I would do differently if I started a channel in 2026.",
+   "fails_when": "The count must be exact and every item must be different in kind.",
+   "match": [
+    "^\\d+ \\w+",
+    "\\b(here are|these are) \\d+\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated"
+   ],
+   "i18n": {
+    "cs": [
+     "^\\d+ \\w+",
+     "\\b(tady je|tohle je) \\d+\\b"
+    ],
+    "ru": [
+     "^\\d+ \\w+",
+     "\\bвот \\d+\\b"
+    ],
+    "ro": [
+     "^\\d+ \\w+",
+     "\\biată \\d+\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-receipt",
+   "name": "The Receipt",
+   "shape": "Show the artifact first, explain second.",
+   "example": "This is the analytics page. This video did 40% of the channel's watch time. Here is why.",
+   "fails_when": "Requires a real screenshot. A described receipt is not a receipt.",
+   "match": [
+    "\\bthis is (the|my)\\b",
+    "\\bscreenshot\\b",
+    "\\bproof\\b",
+    "\\breceipts?\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "\\btohle je (můj|moje|ta|ten)\\b",
+     "\\bdůkaz\\b"
+    ],
+    "ru": [
+     "\\bэто (мой|моя|та самая)\\b",
+     "\\bдоказательств\\w*\\b",
+     "\\bскриншот\\b"
+    ],
+    "ro": [
+     "\\basta e (al meu|dovada)\\b",
+     "\\bdovad\\w*\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-insider",
+   "name": "The Insider",
+   "shape": "Information from inside a system.",
+   "example": "YouTube tells you which videos are underperforming. Almost nobody opens the report.",
+   "fails_when": "Do not claim insider access you do not have.",
+   "match": [
+    "\\b(nobody|almost nobody|most people) (knows?|opens?|uses?)\\b",
+    "\\bhidden\\b",
+    "\\bburied\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b(skoro )?nikdo (neví|nepoužívá|neotevře)\\b",
+     "\\bskryt\\w*\\b"
+    ],
+    "ru": [
+     "\\b(почти )?никто не (знает|использует|открывает)\\b",
+     "\\bскрыт\\w*\\b"
+    ],
+    "ro": [
+     "\\b(aproape )?nimeni nu (știe|folosește)\\b",
+     "\\bascuns\\w*\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-impossible",
+   "name": "The Impossible Claim",
+   "shape": "State something that sounds untrue, then prove it.",
+   "example": "You can write, title, thumbnail and schedule a week of videos without opening a single editor.",
+   "fails_when": "The proof has to start within 20 seconds or it reads as clickbait.",
+   "match": [
+    "\\bwithout\\b",
+    "\\bnever\\b",
+    "\\bin one\\b",
+    "\\bzero\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bbez (jediného|jakéhokoli)\\b",
+     "\\bnikdy\\b",
+     "\\bnula\\b"
+    ],
+    "ru": [
+     "\\bбез (единого|какого-либо)\\b",
+     "\\bникогда\\b",
+     "\\bноль\\b"
+    ],
+    "ro": [
+     "\\bfără (niciun|nicio)\\b",
+     "\\bniciodată\\b",
+     "\\bzero\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-comparison",
+   "name": "The Comparison",
+   "shape": "Two named options, one winner.",
+   "example": "I wrote the same video three ways. One of them held 62% and the other two did not.",
+   "fails_when": "Say the losing option out loud. A comparison with no loser is an advert.",
+   "match": [
+    "\\bvs\\.?\\b",
+    "\\bversus\\b",
+    "\\bwhich (one )?(is|wins)\\b",
+    "\\bsame .* (three|two) ways\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "clip"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bvs\\.?\\b",
+     "\\bversus\\b",
+     "\\bkter(ý|á|é) (vyhraje|je lepší)\\b"
+    ],
+    "ru": [
+     "\\bvs\\.?\\b",
+     "\\bпротив\\b",
+     "\\bчто (лучше|победит)\\b"
+    ],
+    "ro": [
+     "\\bvs\\.?\\b",
+     "\\bversus\\b",
+     "\\bcare (e mai bun|câștigă)\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-origin",
+   "name": "The Origin",
+   "shape": "Where a result actually came from.",
+   "example": "Every video on this channel starts in the same 12-line file. Here it is.",
+   "fails_when": "Works once per channel. It is a reveal about you, and you only have one.",
+   "match": [
+    "\\bevery (video|post) .* starts\\b",
+    "\\bit all (starts|started)\\b",
+    "\\bthe (real )?reason\\b"
+   ],
+   "formats": [
+    "talking-head",
+    "narrated",
+    "series"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bvšechno (to )?začalo\\b",
+     "\\bskutečný důvod\\b"
+    ],
+    "ru": [
+     "\\bвсё началось\\b",
+     "\\bнастоящая причина\\b"
+    ],
+    "ro": [
+     "\\btotul a început\\b",
+     "\\badevăratul motiv\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-deadline",
+   "name": "The Deadline",
+   "shape": "Something is changing on a date.",
+   "example": "The old description format stops mattering this month. Here is what replaces it.",
+   "fails_when": "Only use with a real, checkable date. This is the fastest formula to lose trust with.",
+   "match": [
+    "\\b(this|next) (week|month|year)\\b",
+    "\\bis changing\\b",
+    "\\bno longer\\b",
+    "\\bas of\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b(tento|tenhle|příští) (týden|měsíc|rok)\\b",
+     "\\bse mění\\b",
+     "\\bod (ledna|února|března|dubna|května|června|července|srpna|září|října|listopadu|prosince)\\b"
+    ],
+    "ru": [
+     "\\b(на этой|на следующей) неделе\\b",
+     "\\bменяется\\b",
+     "\\bс (января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)\\b"
+    ],
+    "ro": [
+     "\\b(săptămâna|luna) (aceasta|viitoare)\\b",
+     "\\bse schimbă\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-direct-address",
+   "name": "The Direct Address",
+   "shape": "Name the exact viewer in the first six words.",
+   "example": "If you have under a thousand subscribers, this is the only video you need this week.",
+   "fails_when": "Narrow beats broad. 'If you make videos' addresses nobody.",
+   "match": [
+    "^if you\\b",
+    "\\bfor (anyone|everyone|people) who\\b",
+    "\\byou specifically\\b"
+   ],
+   "formats": [
+    "talking-head"
+   ],
+   "i18n": {
+    "cs": [
+     "^pokud (máš|jsi|děláš)\\b",
+     "^jestli (máš|jsi)\\b",
+     "\\bpro každého, kdo\\b"
+    ],
+    "ru": [
+     "^если (ты|у тебя|вы)\\b",
+     "\\bдля (всех|тех), кто\\b"
+    ],
+    "ro": [
+     "^dacă (ai|ești)\\b",
+     "\\bpentru (oricine|cei care)\\b"
+    ]
+   }
+  },
+  {
+   "id": "in-medias-res",
+   "name": "In Medias Res",
+   "formats": [
+    "narrated",
+    "storytime",
+    "series"
+   ],
+   "shape": "Open at the worst moment of the story, mid-action, then rewind.",
+   "example": "My sister was holding my wedding dress over the fireplace when I walked in.",
+   "fails_when": "Dies if the rewind takes longer than ten seconds - the viewer came for the moment you opened on.",
+   "match": [
+    "\\bwhen I (walked|came|got) in\\b",
+    "\\b(was|were) (holding|standing|screaming)\\b",
+    "\\bthat's when\\b"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bkdyž jsem (vešel|vešla|přišel|přišla)\\b",
+     "\\bv tu chvíli\\b"
+    ],
+    "ru": [
+     "\\bкогда я (вошёл|вошла|пришёл|пришла|зашёл|зашла)\\b",
+     "\\bи тут\\b",
+     "\\bв этот момент\\b"
+    ],
+    "ro": [
+     "\\bcând am intrat\\b",
+     "\\batunci a\\b",
+     "\\bîn acel moment\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-confession",
+   "name": "The Confession",
+   "formats": [
+    "storytime",
+    "narrated"
+   ],
+   "shape": "First person admits something the listener should judge, then asks to be judged.",
+   "example": "I didn't tell my husband I'd inherited a house. Am I wrong?",
+   "fails_when": "Dies if the narrator is obviously right - there has to be a real case against them.",
+   "match": [
+    "\\bam I (wrong|the)\\b",
+    "\\bI (never|didn't) told?\\b",
+    "\\bnobody knows (that )?I\\b"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bjsem (v tom|tady) (ten )?špatn",
+     "\\bnikomu jsem (neřekl|neřekla)\\b",
+     "\\bnikdo neví, že\\b"
+    ],
+    "ru": [
+     "\\bя (не прав|не права|неправ)\\b",
+     "\\bя никому не (сказал|сказала)\\b",
+     "\\bникто не знает, что я\\b"
+    ],
+    "ro": [
+     "\\bgreșesc\\b",
+     "\\bn-am spus nimănui\\b",
+     "\\bnimeni nu știe că\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-time-machine",
+   "name": "The Time Machine",
+   "formats": [
+    "narrated",
+    "series",
+    "history"
+   ],
+   "shape": "Drop the viewer into a specific year and place, with one sensory detail.",
+   "example": "Two thousand years ago, on this hill, ten thousand Dacians were waiting for Rome.",
+   "fails_when": "Dies on a date with no image attached. The year is the frame, the detail is the hook.",
+   "match": [
+    "\\b(\\d+|hundred|thousand) years ago\\b",
+    "\\bin (the year )?\\d{3,4}\\b",
+    "\\bour (ancestors|grandparents)\\b"
+   ],
+   "i18n": {
+    "cs": [
+     "\\bpřed (\\d+|sto|tisíci|dvěma tisíci) (lety|let)\\b",
+     "\\bv roce \\d{3,4}\\b",
+     "\\bnaši předci\\b"
+    ],
+    "ru": [
+     "\\b(\\d+|сто|тысячу|две тысячи) лет назад\\b",
+     "\\bв \\d{3,4} году\\b",
+     "\\bнаши предки\\b"
+    ],
+    "ro": [
+     "\\bacum (\\d+|o sută|o mie|două mii) de ani\\b",
+     "\\bîn anul \\d{3,4}\\b",
+     "\\bstrămoșii noștri\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-caption-tease",
+   "name": "The Caption Tease",
+   "formats": [
+    "clip"
+   ],
+   "shape": "On-screen text over a film or found clip that tells the viewer what to watch for, without saying what happens.",
+   "example": "Watch his hand, not his face.",
+   "fails_when": "Dies if the caption gives away the payoff, or if the payoff lands after the third second with nothing to hold the eye.",
+   "match": [
+    "^watch (his|her|the|what)\\b",
+    "\\bwait for (it|the end)\\b",
+    "\\bhe (didn't|had no idea)\\b",
+    "\\bnobody noticed\\b"
+   ],
+   "i18n": {
+    "cs": [
+     "^sleduj\\b",
+     "\\bpočkej (si )?na (to|konec)\\b",
+     "\\b(netušil|netušila)\\b",
+     "\\bnikdo si nevšiml\\b"
+    ],
+    "ru": [
+     "^(смотри|следи) (на|за)\\b",
+     "\\bдождись (конца)?\\b",
+     "\\bон (не знал|понятия не имел)\\b",
+     "\\bникто не заметил\\b"
+    ],
+    "ro": [
+     "^uită-te la\\b",
+     "\\bașteaptă (finalul)?\\b",
+     "\\bn-avea idee\\b",
+     "\\bnimeni n-a observat\\b"
+    ]
+   }
+  },
+  {
+   "id": "the-continuation",
+   "name": "The Continuation",
+   "formats": [
+    "series"
+   ],
+   "shape": "Part 2+ of a series: one line that reorients a new viewer and pulls the old one forward, with no recap montage.",
+   "example": "They had three days of food left, and the river was rising. Part 3.",
+   "fails_when": "Dies as a recap. If the first line repeats the last part, returning viewers leave; if it assumes the last part, new ones do.",
+   "match": [
+    "\\bpart \\d+\\b",
+    "\\bwhere we left\\b",
+    "\\b(had|has) (\\d+|three|two) (days|hours) left\\b"
+   ],
+   "i18n": {
+    "cs": [
+     "\\b(\\d+\\.|) ?(díl|část)\\b",
+     "\\bzbýval(y|o|a)? (jim |nám )?\\w+ (dny|dní|hodin)\\b"
+    ],
+    "ru": [
+     "\\bчасть \\d+\\b",
+     "\\bосталось (\\d+|три|два) (дня|дней|часа)\\b"
+    ],
+    "ro": [
+     "\\bpartea \\d+\\b",
+     "\\bmai aveau (\\d+|trei|două) (zile|ore)\\b"
+    ]
+   }
+  }
+ ]
+}
